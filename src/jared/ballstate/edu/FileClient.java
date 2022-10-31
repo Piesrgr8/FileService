@@ -37,15 +37,19 @@ public class FileClient {
 	                String fileName2 = sc.nextLine();
 	                mg.deleteFile(fileName2, nm);
 					break;
-				case 'U':
-					System.out.println("Enter the name of the file to upload: ");
-					String fileName3 = sc.nextLine();
-					mg.uploadFile(fileName3, nm);
-				case 'R':
-					System.out.println("Enter the name of the file to rename: ");
-					String fileName4 = sc.nextLine();
-					String rename = sc.nextLine();
-					mg.renameFile(fileName4, rename, nm);
+//				case 'U':
+//					System.out.println("Enter the name of the file to upload: ");
+//					String fileName3 = sc.nextLine();
+//					mg.uploadFile(fileName3, nm);
+//					break;
+//				case 'R':
+//					System.out.println("Enter the name of the file to rename: ");
+//					String fileName4 = sc.nextLine();
+//					String rename = sc.nextLine();
+//					mg.renameFile(fileName4, rename, nm);
+//					break;
+				case 'L':
+					break;
 				case 'Q':
 					System.out.println("Goodnight!");
 					//mg.stopService(nm);

@@ -49,10 +49,12 @@ public class FileClient {
 //					mg.renameFile(fileName4, rename, nm);
 //					break;
 				case 'L':
+					System.out.println("Listing files...");
+					mg.listFiles(nm);
 					break;
 				case 'Q':
 					System.out.println("Goodnight!");
-					//mg.stopService(nm);
+					mg.stopService(nm);
 					life = false;
 					break;
 			}

@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 
 public class CMDManager {
 	
+	private static final int MAX_Client_MESSAGE_LENGTH = 1024;
+	
 	public void renameFile(String path, String rename, NetworkManager nm) throws IOException {
 		ByteBuffer buffer = ByteBuffer.wrap(("R" + path + "/" + rename).getBytes());
 //		ByteBuffer buffer2 = ByteBuffer.wrap((rename).getBytes());
@@ -78,6 +80,13 @@ public class CMDManager {
         } else {
             System.out.println("The request was accepted");
         }
+	}
+	
+	public void listFiles(NetworkManager nm) throws IOException {
+		ByteBuffer buffer = ByteBuffer.wrap(("L").getBytes());
+		SocketChannel channel = nm.getSocketChannel();
+		channel.write(buffer);
+		channel.shutdownOutput();
 	}
 	
 	public void stopService(NetworkManager nm) throws IOException {

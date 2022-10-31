@@ -1,19 +1,15 @@
 package jared.ballstate.edu.server;
-
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
-
 public class ServerTCP {
     private static final int MAX_Client_MESSAGE_LENGTH = 1024;
     public static void main(String[] args) throws IOException {
@@ -22,21 +18,30 @@ public class ServerTCP {
             return;
         }
         int port = Integer.parseInt(args[0]);
-        ServerSocketChannel listenChannel =
-                ServerSocketChannel.open();
+        ServerSocketChannel listenChannel = ServerSocketChannel.open();
         listenChannel.bind(new InetSocketAddress(port));
+
+
         while(true){
             //accept() is a blocking call
             //it will return only when it receives a new
             //connection request from a client
             //accept() performs the three-way handshake
             //with the client before it returns
-            SocketChannel serveChannel =
-                    listenChannel.accept();
+            SocketChannel serveChannel = listenChannel.accept();
+
             ByteBuffer buffer = ByteBuffer.allocate(MAX_Client_MESSAGE_LENGTH);
+            /*
+            ByteBuffer buffer2 = ByteBuffer.allocate(MAX_Client_MESSAGE_LENGTH);
+            */
+
             //ensures that we read the whole message
             while(serveChannel.read((buffer)) >= 0);
             buffer.flip();
+            /*
+            while(serveChannel.read((buffer2)) >= 0);
+            buffer2.flip();
+            */
             //get the first character from the client message
             char command = (char)buffer.get();
             System.out.println("Command from client: "+ command);
@@ -67,6 +72,7 @@ public class ServerTCP {
                             serveChannel.write(ByteBuffer.wrap(line.getBytes()));
                         //to here
                         }
+                        br.close();
                     }
                     serveChannel.close();
                     break;
@@ -91,26 +97,27 @@ public class ServerTCP {
                     }
                     serveChannel.close();
                     break;
-
+                    
                 case 'R':
                     byte[] rn = new byte[buffer.remaining()];
                     buffer.get(rn);
-                    String toBeRenamed = new String(rn);
-                    File rnmd = new File(toBeRenamed);
+                    String seperateString = new String(rn);
+                    String[] newString = seperateString.split("|");
+                    String old = newString[0];
+                    String newS = newString[1];
 
+                    File rnmd = new File(old);
 
-                    byte[] nn = new byte[buffer.remaining()];
-                    buffer.get(nn);
-                    String newFile = new String(nn);
-                    File newlyNamedFile = new File(newFile);
+                    //delete old file
 
+                    File newlyNamedFile = new File(newS);
 
                     if (!rnmd.exists() || rnmd.isDirectory()) {
                         sendReplyCode(serveChannel, 'N');
                     }
                     else {
                         sendReplyCode(serveChannel, 'Y');
-                        Path source = Paths.get("./files/"+rnmd);
+                        Path source = Paths.get("./"+rnmd);
                         try{
                             Files.move(source,source.resolveSibling(String.valueOf(newlyNamedFile)));
 
@@ -122,6 +129,7 @@ public class ServerTCP {
                     }
                     //a little unconventional, i can send a stack overflow article i based this on if you need
                     serveChannel.close();
+
                     break;
 
                 case 'Q':
@@ -132,44 +140,48 @@ public class ServerTCP {
                     serveChannel.close();
                     break;
 
-
-                case 'U':
-                    byte[] u = new byte[buffer.remaining()];
-                    buffer.get(u);
-                    sendReplyCode(serveChannel, 'Y');
-                    String uploadedFileName = new String(u);
-                    File uploadedFile = new File(uploadedFileName);
-                    System.out.println("The requested File name is: " + uploadedFile);
-                    Files.createDirectories(Paths.get("./uploaded"));
+                
+//                case 'U':
+//                    byte[] u = new byte[buffer.remaining()];
+//                    buffer.get(u);
+//                    String uploadedFile = new String(u);
+//                    //you do the highlited portion of writing a new file
+//                    //check y or n if file exists
+//
+//                    byte[] u2 = new byte[buffer2.remaining()];
+//                    buffer2.get(u2);
+//                    String fileContent = new String(u2);
+//
+//                    cChannel.close();
+//                    
+//            		BufferedWriter bw = new BufferedWriter(new FileWriter(path+fileName, true));
+//                    ByteBuffer data = ByteBuffer.allocate(1024);
+//            		int bytesRead;
+//            		while ((bytesRead = serveChannel.read(data)) != -1) {
+//            			data.flip();
+//            			byte[] a1 = new byte[bytesRead];
+//            			data.get(a1);
+//            			String serverMsg = new String(a1);
+//            			bw.write(serverMsg);
+//            			data.clear();
+//            		}
+//            		bw.close();
+//            		serveChannel.close();
+//                    break;
                     
-            		BufferedWriter bw = new BufferedWriter(new FileWriter("./uploaded/"+uploadedFileName, true));
-                    ByteBuffer data = ByteBuffer.allocate(1024);
-            		int bytesRead;
-            		while ((bytesRead = serveChannel.read(data)) != -1) {
-            			data.flip();
-            			byte[] c = new byte[bytesRead];
-            			data.get(c);
-            			String serverMsg = new String(c);
-            			bw.write(serverMsg);
-            			data.clear();
-            		}
-            		bw.close();
-            		serveChannel.close();
-            		break;
-                    //you do the highlited portion of writing a new file
-                    //check y or n if file exists
 
                 case 'L':
                     byte[] l = new byte[buffer.remaining()];
                     buffer.get(l);
-                    String[] pathnames;
-                    File check = new File("./files");
-                    pathnames = check.list();
-
-                    for (String pathname : pathnames){
-                        System.out.println(pathname);
+                    
+                    File[] filesList = new File("./").listFiles();
+                    
+                    System.out.println(filesList.length + " are found.");
+                    for (File f : filesList){
+                        if (!f.isDirectory()){
+                            System.out.println(f.getName());
+                        }
                     }
-
                     serveChannel.close();
                     break;
 

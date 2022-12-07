@@ -46,6 +46,20 @@ public class NetworkManager {
 		bw.close();
 	}
 	
+	public void upload(String fileName, String path) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(path+fileName, true));
+        ByteBuffer data = ByteBuffer.allocate(1024);
+		int bytesRead;
+		while ((bytesRead = sa.write(data)) != -1) {
+			data.flip();
+			byte[] a = new byte[bytesRead];
+			String serverMsg = new String(a);
+			bw.write(serverMsg);
+			data.clear();
+		}
+		bw.close();
+	}
+	
 	public SocketChannel getSocketChannel() {
 		return sa;
 	}

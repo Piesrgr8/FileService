@@ -11,22 +11,12 @@ import java.nio.file.Paths;
 
 public class CMDManager {
 	
-	private static final int MAX_Client_MESSAGE_LENGTH = 1024;
-	
 	public void renameFile(String path, String rename, NetworkManager nm) throws IOException {
-		ByteBuffer buffer = ByteBuffer.wrap(("R" + path + "/" + rename).getBytes());
-//		ByteBuffer buffer2 = ByteBuffer.wrap((rename).getBytes());
+		ByteBuffer buffer = ByteBuffer.wrap(("R" + path + "|" + rename).getBytes());
         SocketChannel channel = nm.getSocketChannel();
-//        SocketChannel channel2 = SocketChannel.open();
-        
-//        channel2.connect(new InetSocketAddress(ip, port));
         
         channel.write(buffer);
-        //It's critical to shut down output on client side
-        //when client is done sending to server
-//        channel2.write(buffer2);
         channel.shutdownOutput();
-//      channel2.shutdownOutput();
         
         //receive server reply code
         if (getServerCode(channel) != 'Y') {

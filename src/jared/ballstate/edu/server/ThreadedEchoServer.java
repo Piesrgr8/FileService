@@ -1,35 +1,20 @@
 package jared.ballstate.edu.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
-
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ThreadedEchoServer {
 
     static final int PORT = 1978;
+    private static Socket sc;
 
     public static void main(String args[]) {
-        ServerSocket serverSocket = null;
-        Socket socket = null;
-
-        try {
-            serverSocket = new ServerSocket(PORT);
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-        while (true) {
-            try {
-                assert serverSocket != null;
-                socket = serverSocket.accept();
-                System.out.println("Accepted Client Connection! " + socket);
-            } catch (IOException e) {
-                System.out.println("I/O error: " + e);
-            }
-            // new thread for a client
-            new EchoThread(socket).start();
-        }
+    	// newSingleThreadExecutor creates a thread pool with a single thread.
+        // If multiple threads are needed, use:
+        //   newFixedThreadPool(numThreads)
+        ExecutorService p = Executors.newSingleThreadExecutor();
+        p.submit(new EchoThread(sc));
+        System.out.println("Main thread submitted the task.");
     }
 }

@@ -1,4 +1,4 @@
-package jared.ballstate.edu;
+package Server;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -14,7 +14,7 @@ public class FileClient {
 			return;
 		}
 		
-		serverIP = args[0];
+		serverIP = args[1];
 		serverPort = Integer.parseInt(args[1]);
 		
 		NetworkManager nm = new NetworkManager(serverIP, serverPort);

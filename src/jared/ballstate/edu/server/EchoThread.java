@@ -1,4 +1,4 @@
-package jared.ballstate.edu.server;
+package Server;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -41,7 +41,7 @@ public class EchoThread extends Thread {
         {
             InputStream inp = null;
             BufferedReader brinp = null;
-            int port = ThreadedEchoServer.PORT;
+            int port = 1978;
             ServerSocketChannel listenChannel = null;
             try {
                 listenChannel = ServerSocketChannel.open();
@@ -221,7 +221,7 @@ public class EchoThread extends Thread {
 
                             }catch(IOException e)
                             {
-
+                                e.printStackTrace();
                             }
                             System.out.println("File was renamed to " + newlyNamedFile);
                         }
@@ -272,18 +272,18 @@ public class EchoThread extends Thread {
             // newSingleThreadExecutor creates a thread pool with a single thread.
             // If multiple threads are needed, use:
             //   newFixedThreadPool(numThreads)
-            ExecutorService p = Executors.newSingleThreadExecutor();
+            ExecutorService p = Executors.newFixedThreadPool(8);
+
             p.submit(new executableThread());
             System.out.println("Main thread submitted the task.");
             System.out.println("Main thread sleeps for 1 second.");
             try{
-                Thread.sleep(1000);
+                Thread.sleep(1_000_000);
             }catch(Exception e){}
             p.shutdown();
             System.out.println("Main thread terminates.");
         }
     }
-
         private static void sendReplyCode (SocketChannel channel, char code) throws
                 IOException{
             byte[] a = new byte[1];
@@ -291,15 +291,10 @@ public class EchoThread extends Thread {
             ByteBuffer data = ByteBuffer.wrap(a);
             channel.write(data);
         }
-            
-
-        
         public void executableThread (SocketChannel socketChannel)
         {
             this.sc = socketChannel;
         }
-        
-        
     }
 /*
     public void call() throws IOException {
@@ -476,3 +471,10 @@ public class EchoThread extends Thread {
         channel.write(data);
     }
     */
+
+
+
+
+
+
+
